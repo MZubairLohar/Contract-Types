@@ -1,8 +1,8 @@
 pragma solidity ^0.6.0;
 
-import "../token/ERC20/SafeERC20.sol";
-import "../access/Ownable.sol";
-import "../math/SafeMath.sol";
+import "./SafeERC20.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
 
 /**
  * @title TokenVesting

@@ -1,6 +1,6 @@
 pragma solidity ^0.6.0;
 
-import "../GSN/Context.sol";
+import "./Context.sol";
 
 /**
  *  Contract module which allows children to implement an emergency stop

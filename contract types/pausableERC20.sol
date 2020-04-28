@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
 import "./ERC20.sol";
-import "../../utils/Pausable.sol";
+import "./Pausable.sol";
 
 /**
  *  ERC20 token with pausable token transfers, minting and burning.
