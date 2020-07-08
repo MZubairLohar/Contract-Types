@@ -23,13 +23,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
 
      mapping (address => EnumerableSet.UintSet) private _holderTokens;
 
-    // Enumerable mapping from token ids to their owners
     EnumerableMap.UintToAddressMap private _tokenOwners;
 
-    // Mapping from token ID to approved address
     mapping (uint256 => address) private _tokenApprovals;
 
-    // Mapping from owner to operator approvals
     mapping (address => mapping (address => bool)) private _operatorApprovals;
 
     // Token name
@@ -78,63 +75,44 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
      */
     bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
 
-    /**
-     * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
-     */
-    constructor (string memory name, string memory symbol) public {
+\    constructor (string memory name, string memory symbol) public {
         _name = name;
         _symbol = symbol;
 
-        // register the supported interfaces to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721);
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
         _registerInterface(_INTERFACE_ID_ERC721_ENUMERABLE);
     }
 
-    /**
-     * @dev See {IERC721-balanceOf}.
-     */
     function balanceOf(address owner) public view override returns (uint256) {
         require(owner != address(0), "ERC721: balance query for the zero address");
 
         return _holderTokens[owner].length();
     }
 
-    /**
-     * @dev See {IERC721-ownerOf}.
-     */
-    function ownerOf(uint256 tokenId) public view override returns (address) {
+ \   function ownerOf(uint256 tokenId) public view override returns (address) {
         return _tokenOwners.get(tokenId, "ERC721: owner query for nonexistent token");
     }
 
-    /**
-     * @dev See {IERC721Metadata-name}.
-     */
+  
     function name() public view override returns (string memory) {
         return _name;
     }
 
-    /**
-     * @dev See {IERC721Metadata-symbol}.
-     */
+  
     function symbol() public view override returns (string memory) {
         return _symbol;
     }
 
-    /**
-     * @dev See {IERC721Metadata-tokenURI}.
-     */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
         string memory _tokenURI = _tokenURIs[tokenId];
 
-        // If there is no base URI, return the token URI.
-        if (bytes(_baseURI).length == 0) {
+  \      if (bytes(_baseURI).length == 0) {
             return _tokenURI;
         }
-        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-        if (bytes(_tokenURI).length > 0) {
+   \     if (bytes(_tokenURI).length > 0) {
             return string(abi.encodePacked(_baseURI, _tokenURI));
         }
         // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
@@ -142,7 +120,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
     }
 
     /**
-    * @dev Returns the base URI set via {_setBaseURI}. This will be
+    *  Returns the base URI set via {_setBaseURI}. This will be
     * automatically added as a prefix in {tokenURI} to each token's URI, or
     * to the token ID if no specific URI is set for that token ID.
     */
