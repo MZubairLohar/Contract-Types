@@ -1,12 +1,12 @@
 pragma solidity ^0.6.0;
 
 import "./ERC165.sol";
-import "./SafeMath.sol";
+//import "./SafeMath.sol";
 import "./IERC721.sol";
 
 
  contract ERC721 is ERC165, IERC721{
-     using SafeMath for uint256;
+  //   using SafeMath for uint256;
     
     
     
@@ -23,7 +23,9 @@ import "./IERC721.sol";
     
     
     //events
-    
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
     
     
     
@@ -101,10 +103,25 @@ import "./IERC721.sol";
         return _tokenApprovals[tokenId];
     }
     
+    function _exist(uint256 tokenId) internal view returns(bool){
+        require(tokenId > 0, " enter valid token Id");
+        address owner = _tokenOwners[tokenId];
+        if( owner != address(0)){
+            return true;
+        }
+        return false;
+    }
     
     
+    function isApprovedForAll( address owner, address spender) internal view returns(bool){
+         return _operatorApproval[owner][spender];
+    } 
     
-    
+    function _isApproveOrOwner(address spender, uint256 tokenId) internal view returns(bool){
+        require(_exist(tokenId),"invalid token ID");
+        address owner = ownerOf[tokenId];
+        return( spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
+    }
     
     
     //trasnfer functions
@@ -121,20 +138,68 @@ import "./IERC721.sol";
          return _operatorApproval[owner][operator];
     }
     
+    function transfer(address to, uint256 tokenId) public virtual{
+        require(_isApproveOrOwner(msg.sender,tokenId), "transfer caller is not owner");
+        address from = msg.sender;
+        _transfer(from, to, tokenId);
+        
+    }
+    
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override{
+        require(_isApproveOrOwner(from, tokenId), "approve caller is not owner");
+        _transfer(from, to, tokenId);
+    }
+   
+    
    
    
    
    
-   
-    // private functions
+    // private or internal functions
     function _approve(address to,uint256 tokenId) private {
         _tokenApprovals[tokenId] = to;
         emit Approval(ownerOf(tokenId), to, tokenId);
     }
     
     
+    function _mint(address to, uint256 tokenId) internal virtual{
+        require( to != address(0), "Enter valid address");
+        totalSupply = totalSupply.add(1);
+        _addToken(to, tokenId);
+        emit Transfer(address(0), to, tokenId);
+    }
+    
+    
+    function burn(uint256 tokenId) internal virtual{
+        owner = ownerOf[tokenId];
+        _approve(address(0),tokenId);
+        if( bytes(_tokenURI[tokenId]).length != 0){
+         delete _tokenURI[tokenId];
+        }
+        deleteToken (owner,tokenId);
+        _totalSupply = _totalSupply.sub(1);
+        
+    }
     
     
     
     //safemath functions
+        
+    function add(uint256 a, uint256 b) internal pure returns(uint256){
+        uint256 c = a + b;
+        require ( c >= a , " SafeMath: addition overflow");
+        return c;
+    }
+    
+    function sub(uint256 a, uint256 b) internal pure returns(uint256){
+        require ( b <= a , " SafeMath: subtraction overflow");
+        uint256 c = a - b;
+        return c;
+    }
+    function sub(uint256 a, uint256 b) internal pure returns(uint256){
+        require(sub(a,b)," subtraction flow");
+    }
+
+
+
  }
